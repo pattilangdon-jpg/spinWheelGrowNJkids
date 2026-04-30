@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Spin & Learn</title>
+
+  <!-- ✅ Link to your external stylesheet -->
+  <link rel="stylesheet" href="style.css" />
+
+</head>
+
+<body>
+  <div class="page">
+  <button id="langToggleBtn" class="lang-btn">Jugar en Español</button>
+  <h1><img src="images/GrowNJkidsLogo.jpg" alt="Grow NJ Kids Logo"></h1>
+
+  <div id="wheel-container">
+    <div class="arrow"></div>
+    <canvas id="wheel" width="400" height="400"></canvas>
+  </div>
+
+  <button id="spinBtn">SPIN</button>
+  <button id="muteBtn" type="button">🔊 Sound</button>
+
+</div>
+  <!-- Overlay (modal) for question + feedback -->
+  <div id="overlay" role="dialog" aria-modal="true" aria-label="Question Overlay">
+    <div id="overlay-content">
+
+      <!-- QUESTION VIEW -->
+      <div id="questionView" class="overlay-section">
+        <h2 id="overlay-title"></h2>
+        <p id="overlay-question"></p>
+
+        <div class="answer-row">
+          <button class="answer-btn" id="trueBtn">True</button>
+          <button class="answer-btn" id="falseBtn">False</button>
+        </div>
+
+        <p class="muted">Select an answer to learn more.</p>
+      </div>
+
+      <!-- INFO / FEEDBACK VIEW -->
+      <div id="infoView" class="overlay-section">
+        <h2 id="feedback-title"></h2>
+        <p id="feedback-text"></p>
+
+        <div class="course-card">
+          <strong>Learn more in Grow NJ Kids training:</strong>
+          <span id="course-name"></span>
+
+          <!-- Optional course link (only shown if courseUrl exists) -->
+          <a id="course-link" class="course-link" href="#" target="_blank" rel="noopener" style="display:none;">
+            View course
+          </a>
+        </div>
+
+        <div class="nav-row">
+          <button id="backBtn">Back to Wheel</button>
+        </div>
+
+        <div class="small-note">
+          For conference engagement and training awareness. Not legal advice.
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ✅ Link to your external JavaScript (use defer so DOM exists before script runs) -->
+  
+  <script type="module" src="script.js" defer></script>
+</body>
+</html>
