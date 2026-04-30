@@ -339,67 +339,131 @@ function getContrastingTextColor(hexColor) {
   return luminance > 150 ? "#000000" : "#FFFFFF";
 }
 
+function getBestTextLayout(ctx, text, maxWidth, baseFontSize) {
+  let fontSize = baseFontSize;
 
+  while (fontSize >= 12) {
+    ctx.font = `${fontSize}px Arial`;
+
+    // Try 1 line
+    if (ctx.measureText(text).width <= maxWidth) {
+      return { lines: [text], fontSize };
+    }
+
+    const words = text.split(' ');
+
+    // Try 2 lines
+    for (let i = 1; i < words.length; i++) {
+      const line1 = words.slice(0, i).join(' ');
+      const line2 = words.slice(i).join(' ');
+
+      if (
+        ctx.measureText(line1).width <= maxWidth &&
+        ctx.measureText(line2).width <= maxWidth
+      ) {
+        return { lines: [line1, line2], fontSize };
+      }
+    }
+
+    // Try 3 lines
+    for (let i = 1; i < words.length - 1; i++) {
+      for (let j = i + 1; j < words.length; j++) {
+        const line1 = words.slice(0, i).join(' ');
+        const line2 = words.slice(i, j).join(' ');
+        const line3 = words.slice(j).join(' ');
+
+        if (
+          ctx.measureText(line1).width <= maxWidth &&
+          ctx.measureText(line2).width <= maxWidth &&
+          ctx.measureText(line3).width <= maxWidth
+        ) {
+          return { lines: [line1, line2, line3], fontSize };
+        }
+      }
+    }
+
+    // If nothing fits, reduce font slightly and try again
+    fontSize -= 1;
+  }
+
+  // Fallback (worst case)
+  return { lines: [text], fontSize: 12 };
+}
 /* =========================
    DRAW THE WHEEL
    ========================= */
 
-function drawWheel() {
-  const slice = (2 * Math.PI) / wedges.length;
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-  const fontSize = Math.max(12, Math.min(16, Math.floor(220 / wedges.length)));
-
-  for (let i = 0; i < wedges.length; i++) {
-    // 🔹 DEFINE ANGLES FIRST (this is critical)
-    const startAngle = angle + i * slice;
-    const endAngle = startAngle + slice;
-    const midAngle = startAngle + slice / 2;
-
-    /* -------- Draw wedge -------- */
-    ctx.beginPath();
-    ctx.moveTo(center, center);
-    ctx.arc(center, center, radius, startAngle, endAngle);
-    ctx.closePath();
-    ctx.fillStyle = colors[i % colors.length];
-    ctx.fill();
-
-    /* -------- Divider line between wedges -------- */
+   function drawWheel() {
+    const slice = (2 * Math.PI) / wedges.length;
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+  
+    const fontSize = Math.max(12, Math.min(16, Math.floor(220 / wedges.length)));
+  
+    for (let i = 0; i < wedges.length; i++) {
+      const startAngle = angle + i * slice;
+      const endAngle = startAngle + slice;
+      const midAngle = startAngle + slice / 2;
+  
+      /* -------- Draw wedge -------- */
+      ctx.beginPath();
+      ctx.moveTo(center, center);
+      ctx.arc(center, center, radius, startAngle, endAngle);
+      ctx.closePath();
+      ctx.fillStyle = colors[i % colors.length];
+      ctx.fill();
+  
+      /* -------- Divider -------- */
+      ctx.save();
+      ctx.beginPath();
+      ctx.strokeStyle = "rgba(95,106,114,0.4)";
+      ctx.lineWidth = 6;
+      ctx.moveTo(center, center);
+      ctx.lineTo(
+        center + radius * Math.cos(startAngle),
+        center + radius * Math.sin(startAngle)
+      );
+      ctx.stroke();
+      ctx.restore();
+  
+      /* -------- Label -------- */
+      const textRadius = radius * (wedges.length > 6 ? 0.5 : 0.6);
+  
+      ctx.save();
+      ctx.translate(center, center);
+      ctx.rotate(midAngle);
+      ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
+      ctx.fillStyle = getContrastingTextColor(colors[i % colors.length]);
+  
+      const label = wedges[i].label || ""; // ✅ safety
+  
+      const maxTextWidth = radius * 0.5;
+      const baseFontSize = Math.max(14, Math.min(18, Math.floor(240 / wedges.length)));
+  
+      const { lines, fontSize: finalFontSize } =
+        getBestTextLayout(ctx, label, maxTextWidth, baseFontSize);
+  
+      ctx.font = `${finalFontSize}px Arial`;
+  
+      const lineHeight = finalFontSize + 2;
+      const offset = (lines.length - 1) * lineHeight / 2;
+  
+      lines.forEach((line, index) => {
+        ctx.fillText(line, textRadius, index * lineHeight - offset);
+      });
+  
+      ctx.restore();
+    } // ✅ THIS WAS MISSING
+  
+    /* -------- Outer border -------- */
     ctx.save();
     ctx.beginPath();
-    ctx.strokeStyle = "rgba(95,106,114,0.4)"; // Rutgers gray
-    ctx.lineWidth = 6;
-    ctx.moveTo(center, center);
-    ctx.lineTo(
-      center + radius * Math.cos(startAngle),
-      center + radius * Math.sin(startAngle)
-    );
+    ctx.strokeStyle = "#5F6A72";
+    ctx.lineWidth = 10;
+    ctx.arc(center, center, radius, 0, Math.PI * 2);
     ctx.stroke();
     ctx.restore();
-
-    /* -------- Centered label -------- */
-    const textRadius = radius * 0.6;
-
-    ctx.save();
-    ctx.translate(center, center);
-    ctx.rotate(midAngle);
-    ctx.textAlign = "center";
-    ctx.textBaseline = "middle";
-    ctx.font = `${fontSize}px Arial`;
-    ctx.fillStyle = getContrastingTextColor(colors[i % colors.length]);
-    ctx.fillText(wedges[i].label, textRadius, 0);
-    ctx.restore();
   }
-
-  /* -------- Outer border -------- */
-  ctx.save();
-  ctx.beginPath();
-  ctx.strokeStyle = "#5F6A72";
-  ctx.lineWidth = 10;
-  ctx.arc(center, center, radius, 0, Math.PI * 2);
-  ctx.stroke();
-  ctx.restore();
-}
 
 
 /* =========================
