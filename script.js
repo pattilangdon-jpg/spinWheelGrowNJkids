@@ -17,27 +17,51 @@
    let wedges = englishWedges;
    
    const langBtn = document.getElementById('langToggleBtn');
+   const CTAtext = document.getElementById('selectCTA');
    
    langBtn.addEventListener('click', () => {
      if (currentLanguage === 'english') {
        currentLanguage = 'spanish';
-       wedges = spanishWedges;
-       langBtn.textContent = 'Play in English';
+       spanishVariables();
+       updateSoundButtonUI()
+       
      } else {
        currentLanguage = 'english';
-       wedges = englishWedges;
-       langBtn.textContent = 'Jugar en Español';
+       englishVariables();
+       updateSoundButtonUI()
+      
      }
    
      // 🔁 IMPORTANT: reinitialize or redraw your wheel here
      drawWheel(); // or whatever your setup function is called
    });
    function englishVariables() {
-    const ANSWER_LABELS = {
+    ANSWER_LABELS = {
       true: "Fact",
       false: "Fiction"
     };
+    wedges = englishWedges;
+    langBtn.textContent = 'Jugar en Español';
+    CTAtext.textContent = 'Select an answer to learn more.';
+    document.getElementById("spinBtn").textContent = "SPIN";
+    trueBtn.innerText = ANSWER_LABELS.true;
+    falseBtn.innerText = ANSWER_LABELS.false;
    }
+   function spanishVariables() {
+    ANSWER_LABELS = {
+      true: "Hecho",
+      false: "Ficción"
+    };
+    wedges = spanishWedges;
+    langBtn.textContent = 'Play in English';
+    CTAtext.textContent = 'Selecciona una respuesta para aprender más.';
+    document.getElementById("spinBtn").textContent = "GIRAR";
+    trueBtn.innerText = ANSWER_LABELS.true;
+    falseBtn.innerText = ANSWER_LABELS.false;
+    document.getElementById('learnMore').textContent = 'Aprende más en la capacitación de Grow NJ Kids:';
+    document.getElementById("disclaimer").textContent = 'Para el compromiso de la conferencia y la conciencia de la capacitación. No es asesoramiento legal.';
+    document.getElementById("backBtn").textContent = "Volver a la rueda";
+  }
 /* =========================
    WHEEL APPEARANCE
    =========================
@@ -154,10 +178,18 @@ function applyMuteState() {
 const muteBtn = document.getElementById("muteBtn");
 
 function updateSoundButtonUI() {
-  if (audio.muted || audio.bgm.paused) {
-    muteBtn.textContent = "🔇 Sound Off";
-  } else {
-    muteBtn.textContent = "🔊 Sound On";
+  if (currentLanguage === "english"){
+    if (audio.muted || audio.bgm.paused) {
+      muteBtn.textContent = "🔇 Sound Off";
+    } else {
+      muteBtn.textContent = "🔊 Sound On";
+    }
+  } else if (currentLanguage === "spanish"){
+    if (audio.muted || audio.bgm.paused) {
+      muteBtn.textContent = "🔇 Sonido Apagado";
+    } else {
+      muteBtn.textContent = "🔊 Sonido Encendido";
+    }
   }
 }
 
@@ -480,13 +512,23 @@ function answer(userAnswer) {
   if (isCorrect) {
     playCheer(); // ✅ cheering for correct answers
   }
-
+  if (currentLanguage === "english"){
+     CTAtext.textContent = 'Select an answer to learn more.';
+  
   feedbackTitle.innerText = isCorrect ? "✅ Correct!" : "ℹ️ Let's Take a Closer Look";
 
   feedbackText.innerText = isCorrect
     ? "Nice work! Want to go deeper? This topic is covered in available training."
     : `${currentQuestion.explanation} Want to explore this further? Grow NJ Kids training covers this topic in detail.`;
+  } else if (currentLanguage === "spanish"){
+     CTAtext.textContent = 'Selecciona una respuesta para aprender más.';
+  
+  feedbackTitle.innerText = isCorrect ? "✅ ¡Correcto!" : "ℹ️ Echemos un vistazo más de cerca";
 
+  feedbackText.innerText = isCorrect
+    ? "¡Buen trabajo! ¿Quieres profundizar? Este tema se cubre en la capacitación disponible."
+    : `${currentQuestion.explanation} ¿Quieres explorar esto más a fondo? La capacitación de Grow NJ Kids cubre este tema en detalle.`;
+  }
   // ── Course recommendation logic ──────────────────────────────────────────
   // Prefer the split correct/incorrect fields; fall back to the legacy
   // single `course` / `courseUrl` fields for backwards compatibility.

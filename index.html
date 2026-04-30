@@ -38,7 +38,7 @@
           <button class="answer-btn" id="falseBtn">False</button>
         </div>
 
-        <p class="muted">Select an answer to learn more.</p>
+        <p class="muted" id="selectCTA">Select an answer to learn more.</p>
       </div>
 
       <!-- INFO / FEEDBACK VIEW -->
@@ -47,7 +47,7 @@
         <p id="feedback-text"></p>
 
         <div class="course-card">
-          <strong>Learn more in Grow NJ Kids training:</strong>
+          <strong id="learnMore">Learn more in Grow NJ Kids training:</strong>
           <span id="course-name"></span>
 
           <!-- Optional course link (only shown if courseUrl exists) -->
@@ -60,7 +60,7 @@
           <button id="backBtn">Back to Wheel</button>
         </div>
 
-        <div class="small-note">
+        <div class="small-note" id="disclaimer">
           For conference engagement and training awareness. Not legal advice.
         </div>
       </div>
@@ -70,6 +70,6 @@
 
   <!-- ✅ Link to your external JavaScript (use defer so DOM exists before script runs) -->
   
-  <script type="module" src="script.js" defer></script>
+  <script type="module" src="script.js"></script>
 </body>
 </html>
