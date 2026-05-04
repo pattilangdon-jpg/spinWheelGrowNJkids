@@ -46,11 +46,14 @@
     document.getElementById("spinBtn").textContent = "SPIN";
     trueBtn.innerText = ANSWER_LABELS.true;
     falseBtn.innerText = ANSWER_LABELS.false;
+    document.getElementById('learnMore').textContent = "Learn more in Grow NJ Kids training:";
+    // document.getElementById("disclaimer").textContent = "For conference engagement and training awareness. Not legal advice.";
+    document.getElementById("backBtn").textContent = "Back to Wheel";
    }
    function spanishVariables() {
     ANSWER_LABELS = {
-      true: "Hecho",
-      false: "Ficción"
+      true: "Verdadero",
+      false: "Falso"
     };
     wedges = spanishWedges;
     langBtn.textContent = 'Play in English';
@@ -59,7 +62,7 @@
     trueBtn.innerText = ANSWER_LABELS.true;
     falseBtn.innerText = ANSWER_LABELS.false;
     document.getElementById('learnMore').textContent = 'Aprende más en la capacitación de Grow NJ Kids:';
-    document.getElementById("disclaimer").textContent = 'Para el compromiso de la conferencia y la conciencia de la capacitación. No es asesoramiento legal.';
+    // document.getElementById("disclaimer").textContent = 'Para el compromiso de la conferencia y la conciencia de la capacitación. No es asesoramiento legal.';
     document.getElementById("backBtn").textContent = "Volver a la rueda";
   }
 /* =========================
@@ -344,7 +347,7 @@ function getBestTextLayout(ctx, text, maxWidth, baseFontSize) {
 
   while (fontSize >= 12) {
     ctx.font = `${fontSize}px Arial`;
-
+    console.log("WIDTH:", ctx.measureText(text).width, "MAX:", maxWidth);
     // Try 1 line
     if (ctx.measureText(text).width <= maxWidth) {
       return { lines: [text], fontSize };

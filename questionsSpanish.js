@@ -1,7 +1,7 @@
 export const wedges = [
     // ─── GNJKTS Categories ───────────────────────────────────────────────────
     {
-      label: "Desarrollo Infantil",
+      label: "Desarrollo Infantil: desde el nacimiento hasta los cinco años",
       questions: [
         {
           question: "Verdadero o Falso: Las actividades en grupo grande (como el tiempo en círculo) son la forma más efectiva de brindar instrucción individualizada para satisfacer las necesidades específicas de cada niño.",
