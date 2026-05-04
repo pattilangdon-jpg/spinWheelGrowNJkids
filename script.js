@@ -343,9 +343,9 @@ function getContrastingTextColor(hexColor) {
 }
 
 function getBestTextLayout(ctx, text, maxWidth, baseFontSize) {
-  let fontSize = baseFontSize;
-
-  while (fontSize >= 12) {
+ let fontSize = baseFontSize;
+const MIN_SPANISH_FONT = 11;
+  while (fontSize >= MIN_SPANISH_FONT) {
     ctx.font = `${fontSize}px Arial`;
     console.log("WIDTH:", ctx.measureText(text).width, "MAX:", maxWidth);
     // Try 1 line
@@ -390,7 +390,7 @@ function getBestTextLayout(ctx, text, maxWidth, baseFontSize) {
   }
 
   // Fallback (worst case)
-  return { lines: [text], fontSize: 12 };
+ return { lines: [text], fontSize: 12 };
 }
 /* =========================
    DRAW THE WHEEL
@@ -438,23 +438,51 @@ function getBestTextLayout(ctx, text, maxWidth, baseFontSize) {
       ctx.textBaseline = "middle";
       ctx.fillStyle = getContrastingTextColor(colors[i % colors.length]);
   
-      const label = wedges[i].label || ""; // ✅ safety
-  
-      const maxTextWidth = radius * 0.5;
+     let label = wedges[i].label || "";
+
+// 🔥 SPECIAL CASE FIX (Spanish long label)
+if (label === "Desarrollo Infantil: desde el nacimiento hasta los cinco años") {
+  const forcedLines = [
+    "Desarrollo Infantil:",
+    "desde el nacimiento",
+    "hasta los cinco años"
+  ];
+
+  const baseFontSize = 14; // pick a stable size for this wedge
+  const lineHeight = baseFontSize + 2;
+  const offset = (forcedLines.length - 1) * lineHeight / 2;
+
+  ctx.font = `${baseFontSize}px Arial`;
+
+  forcedLines.forEach((line, index) => {
+    ctx.fillText(line, textRadius, index * lineHeight - offset);
+  });
+
+  ctx.restore();
+  continue; // 🔴 skip normal layout for this wedge
+
+}
+
+       
+      const maxTextWidth = radius * 0.42;
       const baseFontSize = Math.max(14, Math.min(18, Math.floor(240 / wedges.length)));
   
-      const { lines, fontSize: finalFontSize } =
-        getBestTextLayout(ctx, label, maxTextWidth, baseFontSize);
-  
-      ctx.font = `${finalFontSize}px Arial`;
-  
-      const lineHeight = finalFontSize + 2;
-      const offset = (lines.length - 1) * lineHeight / 2;
-  
-      lines.forEach((line, index) => {
-        ctx.fillText(line, textRadius, index * lineHeight - offset);
-      });
-  
+   let { lines, fontSize: finalFontSize } =
+  getBestTextLayout(ctx, label, maxTextWidth, baseFontSize);
+
+// 🔹 LOCK FONT BEFORE ANY MEASUREMENT/RENDER
+ctx.font = `${finalFontSize}px Arial`;
+
+// 🔹 Prevent mid-render shrinking effects
+const safeFontSize = finalFontSize;
+
+const lineHeight = safeFontSize + 2;
+const offset = (lines.length - 1) * lineHeight / 2;
+
+// Draw text
+lines.forEach((line, index) => {
+  ctx.fillText(line, textRadius, index * lineHeight - offset);
+});
       ctx.restore();
     } // ✅ THIS WAS MISSING
   
