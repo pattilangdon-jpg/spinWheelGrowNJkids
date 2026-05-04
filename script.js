@@ -37,8 +37,8 @@
    });
    function englishVariables() {
     ANSWER_LABELS = {
-      true: "Fact",
-      false: "Fiction"
+      true: "True",
+      false: "False"
     };
     wedges = englishWedges;
     langBtn.textContent = 'Jugar en Español';
